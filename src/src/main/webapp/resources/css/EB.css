@@ -1,0 +1,142 @@
+   body  { font-family: 'NanumBarunGothic', sans-serif; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  th, td {
+     border: 1px solid rgb(223, 223, 223); 
+    padding: 10px;
+    font-weight: 400
+  }
+  .article{
+    background-color: rgb(245, 245, 245); 
+    padding-left: 20px;
+    color :rgb(70, 70, 70);
+    width:150px;
+    font-size: 0.9em;
+  }
+  #joinForm{
+    margin: 0 25%;
+  }
+  input[type="text"] , input[type="email"],input[type="password"],input[type="tel"]{
+      height: 30px;
+      margin : 3px 0 ;
+      width: 200px;
+  }
+  .checkbox{
+      padding : 0px 5px;
+  }
+  #postBtn{
+    width:100px;
+    background-color: white;
+    border: 1px #ccc solid;
+    padding: 3px 5px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 15px;
+    margin: 4px;
+    cursor: pointer;
+  }
+  #joinForm > #joinTable{
+    border: 1px #ccc red;
+    outline: 1px #ccc red;
+  }
+  #h1{
+    color: #ff8800;
+    font-size: 50px;
+    font-family: 'NanumSquare', sans-serif; 
+    font-weight: 800;
+
+  }
+  #joinForm > #chkBtn{
+    text-align: right;
+  }
+  #cont{
+    padding-top:20px;
+    font-size: 20px;
+    font-weight: 500;
+  }
+  #sample6_address , #sample6_detailAddress{
+    width: 400px;
+  }
+  ::placeholder{
+    font-size: 0.8em;
+    padding-left: 10px;
+  }
+  span.ast{
+    color:#ff8800;
+  }
+  span#msg{
+    font-size: 0.9em;
+    float: right;
+    display: block;
+    padding-top:50px;
+
+  }
+  .Istyle{
+    display: block;
+  width: 200px;
+  height: 30px;
+  font-size: 0.8rem;
+  }
+  .form-control{
+    display:inline-block;
+  }
+  
+  @media screen and (max-width:768px) {
+    th{
+    border:none;
+    display: block;
+  }
+  td{
+    display: list-item;
+    list-style: none;
+    margin-bottom: 20px;
+
+  }
+  .article{
+    background-color: rgb(255, 255, 255); 
+    padding-left: 20px;
+    color :rgb(70, 70, 70);
+    width:150px;
+    font-size: 0.9em;
+  }
+  textarea#contC{
+    width:308px;
+  }
+  #joinForm{
+    margin: 0 2%;
+  }
+  input[type="text"] , input[type="password"],input[type="email"],input[type="tel"],#sample6_address , #sample6_detailAddress{
+      height: 20px;
+      margin : 3px 0 ;
+      width: 100%;
+      border:none;
+  }
+  .checkbox{
+      padding : 0px 10px;
+  }
+  #bathBox{
+      padding-left: 29px;
+  }
+  #sample6_address , #sample6_detailAddress ,#sample6_extraAddress, #sample6_postcode{
+      border : 1px solid rgb(238, 238, 238);
+      height:30px;
+  }
+
+
+  #sample6_postcode{
+    width: 173px;
+  }
+  #joinHeader , #joinForm > #chkBtn{
+    margin-top: 20px;
+    text-align: center;
+  }
+  .btn{
+    width:100px;
+  }
+  .Istyle{
+    width: 100%;
+  }
+  }

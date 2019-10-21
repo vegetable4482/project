@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="mappers.rebbsdaoimplxml-mapper">
+
+	<!-- 게시글 작성 -->
+	<insert id="write" parameterType="com.kh.myapp.rebbs.dto.REbbsDTO">
+		insert into boardreview
+		(reviewbnum,reviewbtitle,reviewbid,reviewbname,reviewbhit,reviewbcontent,reviewbscore,revieworiginFn,reviewrandomFn)
+		values(boardreview_seq.nextval,#{reviewbtitle},#{reviewbid},#{reviewbname},0,#{reviewbcontent},#{reviewbscore},#{revieworiginFn},#{reviewrandomFn})
+
+	</insert>
+	<!-- 게시글 수정 -->
+	<update id="modify" parameterType="com.kh.myapp.rebbs.dto.REbbsDTO">
+		update boardreview
+		set reviewbtitle=#{reviewbtitle}, reviewbudate=sysdate, reviewbcontent=#{reviewbcontent},revieworiginFn=#{revieworiginFn}, reviewrandomFn=#{reviewrandomFn}
+		where reviewbnum=#{reviewbnum}
+
+	</update>
+	<!-- 게시글 삭제 -->
+	<delete id="delete" parameterType="String">
+		delete from boardreview where reviewbnum =
+		#{reviewbnum}
+
+	</delete>
+
+	<!-- 게시글 보기 -->
+	<select id="view" parameterType="String"
+		resultType="com.kh.myapp.rebbs.dto.REbbsDTO">
+
+		select reviewbnum,reviewbtitle,reviewbid,reviewbname,reviewbcdate,reviewbudate,revieworiginFn,reviewrandomFn,
+		reviewbhit,reviewbcontent
+		from boardreview
+		where reviewbnum = #{reviewbnum}
+
+	</select>
+	<!-- 조회수 증가 -->
+	<update id="updateHit" parameterType="String">
+		update boardreview set reviewbhit =
+		reviewbhit + 1
+		where reviewbnum = #{reviewbnum}
+	</update>
+
+	<!-- 게시글 목록보기 -->
+	<!-- 1)전체 -->
+	<select id="list" resultType="com.kh.myapp.rebbs.dto.REbbsDTO">
+		select 
+		reviewbnum,reviewbtitle,reviewbid,reviewbname,reviewbcdate,reviewbudate,revieworiginFn,reviewrandomFn,
+		reviewbhit, reviewbcontent
+		from boardreview
+	</select>
+	
+	<!-- 1+)전체(매인화면 리뷰 리스트) -->
+	<select id="list_main" resultType="com.kh.myapp.rebbs.dto.REbbsDTO">
+		select
+		reviewbnum,reviewbid, reviewbscore, reviewbcontent
+		from boardreview
+		where rownum <![CDATA[<=]]> 4 order by rank()over(order by boardreview.reviewbscore desc)
+	</select>
+
+	<!-- 2)검색어 없는경우 -->
+	<select id="list2" parameterType="java.util.Map"
+		resultType="com.kh.myapp.rebbs.dto.REbbsDTO">
+		select t2.*
+		from ( select row_number() over (order by reviewbnum desc) as num,
+		t1.*
+		from boardreview t1 ) t2
+		where num between #{starRec} and #{endRec}
+	</select>
+
+	<!-- 3)검색어 있는경우 -->
+	<select id="list3" parameterType="java.util.Map"
+		resultType="com.kh.myapp.rebbs.dto.REbbsDTO">
+		select t2.*
+		from ( select row_number() over (order by reviewbnum desc) as num,
+		t1.*
+		from boardreview t1
+		where reviewbnum > 0
+
+		<bind name="keyword" value="'%'+keyword+'%'" />
+		<choose>
+			<!-- 제목+내용 -->
+			<when test="searchType == 'TC'.toString()">
+				and reviewbtitle like #{keyword}
+				or reviewbcontent like #{keyword}
+			</when>
+			<!-- 제목 -->
+			<when test="searchType == 'T'.toString()">
+				and reviewbtitle like #{keyword}
+			</when>
+			<!-- 내용 -->
+			<when test="searchType == 'C'.toString()">
+				and reviewbcontent like #{keyword}
+			</when>
+			<!-- 작성자(별칭) -->
+			<when test="searchType == 'N'.toString()">
+				and reviewbname like #{keyword}
+			</when>
+			<!-- 아이디 -->
+			<when test="searchType == 'I'.toString()">
+				and reviewbid like #{keyword}
+			</when>
+			<!-- 제목 + 내용+ 작성자(별칭) -->
+			<otherwise>
+				and reviewbtitle like #{keyword}
+				or reviewbcontent like #{keyword}
+				or reviewbname like #{keyword}
+			</otherwise>
+		</choose>
+		) t2
+		where num between #{starRec} and #{endRec}
+	</select>
+	<!-- 게시글 총계 -->
+	<!-- 1)검색어 없는경우 -->
+	<select id="totalRec" resultType="Integer">
+		select count(reviewbnum) toalcnt from
+		boardreview
+
+	</select>
+	<!-- 2)검색어 있는경우 -->
+	<select id="searchTotalRec" parameterType="java.util.Map"
+		resultType="Integer">
+
+		select count(reviewbnum) totalRec
+		from ( select row_number() over (order by reviewbnum desc) as num,
+		t1.*
+		from boardreview t1
+		where reviewbnum > 0
+
+		<bind name="keyword" value="'%'+keyword+'%'" />
+		<choose>
+			<!-- 제목+내용 -->
+			<when test="searchType == 'TC'.toString()">
+				and reviewbtitle like #{keyword}
+				or reviewbcontent like #{keyword}
+			</when>
+			<!-- 제목 -->
+			<when test="searchType == 'T'.toString()">
+				and reviewbtitle like #{keyword}
+			</when>
+			<!-- 내용 -->
+			<when test="searchType == 'C'.toString()">
+				and reviewbcontent like #{keyword}
+			</when>
+			<!-- 작성자(별칭) -->
+			<when test="searchType == 'N'.toString()">
+				and reviewbname like #{keyword}
+			</when>
+			<!-- 아이디 -->
+			<when test="searchType == 'I'.toString()">
+				and reviewbid like #{keyword}
+			</when>
+			<!-- 제목 + 내용+ 작성자(별칭) -->
+			<otherwise>
+				and reviewbtitle like #{keyword}
+				or reviewbcontent like #{keyword}
+				or reviewbname like #{keyword}
+			</otherwise>
+		</choose>
+		) t2
+	</select>
+</mapper>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="mappers.request-mapper">
+<!--  견적신청  -->
+<insert id="insert" parameterType="com.kh.myapp.request.dto.RequestDTO">
+	insert into estimateform
+	(formnum,custid,custname,custphonenum,custrequest,constpostnum,constbasicaddress,constrestaddress,consttype,constdate,formcdate,conststyle,constspace,csubmitstatus )
+	values(ESTIMATE_SEQ.nextval,#{custid},#{custname},#{custphonenum},#{custrequest},#{constpostnum},#{constbasicaddress},#{constrestaddress},#{consttype},#{constdate},sysdate,#{conststyle},#{constspace},#{csubmitstatus} )
+	
+		<selectKey keyProperty="formnum" resultType="java.lang.Integer" order="AFTER">
+    	select ESTIMATE_SEQ.currval FROM dual	
+    </selectKey>
+</insert>
+<!--  내견적조회(회원)-->
+<select id="getRequest" parameterType="String" resultType="com.kh.myapp.request.dto.RequestDTO">
+		select *
+		from estimateform 
+		where formnum= #{formnum} 
+</select>
+
+	<!--  견적목록보기  -->
+	<select id="list"
+					resultType="com.kh.myapp.request.dto.RequestDTO">
+		select *
+		from estimateform 
+		where custid= #{custid} order by formnum desc
+	</select>
+	
+	<!--  견적목록보기  -->
+	<select id="getEstimateList"
+					resultType="com.kh.myapp.request.dto.RequestDTO">
+		select *  from estimateform order by formnum desc
+	</select>
+
+	
+	<!-- 견전목록보기(회사) -->
+<select id="clist" resultType="com.kh.myapp.request.dto.RequestDTO">
+		select *
+		from estimateform e,matchingresult m, companymember c
+		where e.formnum= m.mformnum and m.cmembernum=c.cmembernum and  m.cmembernum = #{cmembernum}
+
+</select>
+</mapper>

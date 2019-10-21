@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="mappers.company-mapper">
+<!-- 업체 등록 -->
+<insert id="insert" parameterType="com.kh.myapp.company.dto.CompanyDTO">
+	insert into companymember (cmembernum,cid,cpw,cname,cpostnum,cbasicaddress,crestaddress,cphonenum,businessnum,constarea,consttype,constspace,conststyle,cpolicyagree,cmembercdate )
+	values(CMEMBER_SEQ.nextval,#{cid},#{cpw},#{cname},#{cpostnum},#{cbasicaddress},#{crestaddress},#{cphonenum},#{businessnum},#{constarea},#{consttype},#{constspace},#{conststyle},#{cpolicyagree},sysdate)
+</insert>
+	<!-- 업체 수정 전 비밀번호 체크 -->
+	<select id="modify_first" parameterType="Map" resultType="Integer">
+		select COUNT(*) from companymember where cid=#{cid} and  cpw=#{cpw}
+	</select>
+<!-- 업체 수정 -->
+<update id="modify"
+					parameterType="com.kh.myapp.company.dto.CompanyDTO">
+	
+		update companymember
+		   set 
+		    	 cname=#{cname}, 
+		    	 cpostnum=#{cpostnum}, 
+		    	 cbasicaddress=#{cbasicaddress}, 
+		    	 crestaddress=#{crestaddress},
+		    	 cphonenum=#{cphonenum}, 
+		    	 cmemberudate=sysdate 
+		   where cid=#{cid} and cpw=#{cpw}		
+	
+	</update>
+	
+<update id="adminModify"
+					parameterType="com.kh.myapp.company.dto.CompanyDTO">				
+	  update companymember
+	     set cidstatus='Y', cmemberudate=sysdate
+	     where cid=#{cid}
+</update>
+
+
+<!-- 업체 삭제(회원용:탈퇴) -->
+	<delete id="delete"
+					parameterType="Map">
+			delete from companymember where cid=#{cid} and cpw=#{cpw}
+	</delete>
+	
+
+<!-- 업체 삭제(관리자용)-->
+	<delete id="adminDelete"
+					parameterType="String">
+			delete from companymember where cid=#{cid}
+	</delete>
+	
+<!-- 업체 개인 조회 -->	
+	<select id="getMember"
+					parameterType="String"
+					resultType="com.kh.myapp.company.dto.CompanyDTO">
+		select *
+		  from companymember where cid=#{cid} 	
+	</select>
+<!-- 업체 목록 조회 -->
+
+	<select id="getMemberList"
+					resultType="com.kh.myapp.company.dto.CompanyDTO">
+    select * from companymember order by cmembernum desc
+	</select>
+	
+<!-- 업체 비밀번호 변경 -->
+<update id="changePw" 
+					parameterType="com.kh.myapp.company.dto.CPasswdDTO">
+			
+		update companymember
+		   set cpw = #{toCPW}
+		 where cid = #{cid}
+			and  cpw = #{fromCPW}
+	
+	</update>
+<!-- 업체 아이디 중복검사-->
+	<select id="idcheck" parameterType="String" resultType="Integer">
+      SELECT COUNT(*) FROM companymember
+      WHERE
+      cid = #{cid}
+	</select>
+</mapper>

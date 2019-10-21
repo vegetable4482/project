@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="mappers.login-mapper">
+
+<!-- 회원 유무 체크 -->
+<select id="isMember" parameterType="String" resultType="Integer">
+	select count(id) from member where id=#{id} and pw=#{pw}
+</select>
+
+	<!-- 회원 개인 조회 -->
+	<select id="getMember"
+					parameterType="String"
+					resultType="com.kh.myapp.member.dto.MemberDTO">
+		select *
+		  from member where id=#{id} 	
+	</select>
+	
+<!-- 업체 회원 유무 체크 -->
+<select id="isCompany" parameterType="String" resultType="Integer">
+	select count(cid) from companymember where cid=#{cid} and cpw=#{cpw}
+</select>
+
+	<!-- 업체 회원 개인 조회 -->
+	<select id="getCompany"
+					parameterType="String"
+					resultType="com.kh.myapp.company.dto.CompanyDTO">
+		select *
+		  from companymember where cid=#{cid} 	
+	</select>
+	
+	<!-- 관리자 유무 체크 -->
+	<select id="isAdministrator" parameterType="String" resultType="Integer">
+	select count(aid) from administrator where aid=#{aId} and apw=#{aPw}
+</select>
+
+  <!-- 관리자 개인 조회 -->
+  	<select id="getAdministrator"
+					parameterType="String"
+					resultType="com.kh.myapp.login.dto.AdministratorDTO">
+		select aid,apw,aname,aphonenum,department,empnum,empposition
+		   from administrator
+		    where  aid=#{aId} and apw=#{aPw}
+	</select>
+  
+  
+  
+
+</mapper>

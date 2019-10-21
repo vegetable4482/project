@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="mappers.qblist-mapper">
+
+<!-- 1:1문의글 작성 -->
+<insert id="qnainsert" parameterType="com.kh.myapp.qna.dto.QnaDTO">
+insert into boardqna 
+(qnabnum,qnabtitle,qnabid,qnabname,qnabcdate,qnabhit,qnabcontent,qnabgroup,qnabstep,qnabindent,qnaanswerstatus)
+values(BOARDQNA_SEQ.nextval,#{qnabtitle},#{qnabid},#{qnabname},sysdate,#{qnabhit},#{qnabcontent},#{qnabgroup},#{qnabstep},#{qnabindent},#{qnaanswerstatus})
+</insert>
+<!-- 1:1문의글 보기 -->
+<select id="view" parameterType="String" resultType="com.kh.myapp.qna.dto.QnaDTO">
+select qnabnum,qnabtitle,qnabcontent,qnabid,qnabname,qnabcdate
+from boardqna
+where qnabnum= #{qnabnum}
+</select>
+<!-- 1:1문의 답글 -->
+<insert id="reply" parameterType="com.kh.myapp.qna.dto.QnaDTO">
+insert into boardqna 
+(qnabnum,qnabtitle,qnabid,qnabname,qnabcdate,qnabhit,qnabcontent,qnabgroup,qnabstep,qnabindent,qnaanswerstatus)
+values(BOARDQNA_SEQ.nextval,#{qnabtitle},#{qnabid},#{qnabname},sysdate,#{qnabhit},#{qnabcontent},#{qnabgroup},#{qnabstep},#{qnabindent},#{qnaanswerstatus})
+</insert>
+<!-- 조회수 증가 -->
+<update parameterType="String" id="updateHit"> update boardqna set qnabhit = qnabhit + 1 where qnabnum = #{qnabnum} </update>
+<!-- 게시글 목록보기 -->
+<!-- 1)전체 -->
+<select id="list" resultType="com.kh.myapp.qna.dto.QnaDTO">
+select qnabnum,qnabtitle,qnabid,qnabname,qnabcdate,qnabudate,qnabhit,qnabcontent,qnabgroup,qnabstep,qnabindent,qnaanswerstatus
+from boardqna
+</select>
+<!-- 2)검색어 없는경우 -->
+<select parameterType="java.util.Map" id="list2" resultType="com.kh.myapp.qna.dto.QnaDTO"> 
+select t2.* from ( select row_number() over (order by qnabgroup desc, qnabstep asc) as num, t1.* from boardqna t1 ) t2 
+where num between #{startRec} and #{endRec} </select>
+<!-- 3)검색어 있는경우 -->
+<select id="list3" parameterType="java.util.Map" resultType="com.kh.myapp.qna.dto.QnaDTO">
+select t2.* 
+from ( select row_number() over (order by qnabgroup desc, qnabstep asc) as num, t1.* from boardqna t1 where qnabnum > 0 
+<bind value="'%'+keyword+'%'" name="keyword"/>
+<choose>
+<!-- 제목+내용 -->
+<when test="searchType == 'TC'.toString()"> and qnabtitle like #{keyword} or qnabcontent like #{keyword} </when>
+<!-- 제목 -->
+<when test="searchType == 'T'.toString()"> and qnabtitle like #{keyword} </when>
+<!-- 내용 -->
+<when test="searchType == 'C'.toString()"> and qnabcontent like #{keyword} </when>
+<!-- 작성자(별칭) -->
+<when test="searchType == 'N'.toString()"> and qnabname like #{keyword} </when>
+<!-- 아이디 -->
+<when test="searchType == 'I'.toString()"> and qnabid like #{keyword} </when>
+<!-- 제목 + 내용+ 작성자(별칭) -->
+<otherwise> and qnabtitle like #{keyword} or qnabcontent like #{keyword} or qnabname like #{keyword} </otherwise>
+</choose>
+) t2 where num between #{startRec} and #{endRec} 
+</select>
+<!-- 이전 답글 업데이트 -->
+<update parameterType="java.util.Map" id="updateStep"> 
+update qnaboard set qnabstep = qnabstep + 1 where qnabgroup = #{qnabgroup} and qnabstep > #{qnabstep} </update>
+<!-- 게시글 총계 -->
+<!-- 1)검색어 없는경우 -->
+<select id="totalRec" resultType="Integer"> select count(qnabnum) toalcnt from boardqna </select>
+<!-- 2)검색어 있는경우 -->
+<select parameterType="java.util.Map" id="searchTotalRec" resultType="Integer"> 
+		select count(num) totalRec
+	  from ( select row_number() over (order by qnabgroup desc, qnabstep asc) as num, t1.* 
+	  from qnaboard t1 
+		where qnabnum > 0 
+		<bind value="'%'+keyword+'%'" name="keyword"/>
+		<choose>
+		<!-- 제목+내용 -->
+		<when test="searchType == 'TC'.toString()"> and qnabtitle like #{keyword} or qnabcontent like #{keyword} </when>
+		<!-- 제목 -->
+		<when test="searchType == 'T'.toString()"> and qnabtitle like #{keyword} </when>
+		<!-- 내용 -->
+		<when test="searchType == 'C'.toString()"> and qnabcontent like #{keyword} </when>
+		<!-- 작성자(별칭) -->
+		<when test="searchType == 'N'.toString()"> and qnabnickname like #{keyword} </when>
+		<!-- 아이디 -->
+		<when test="searchType == 'I'.toString()"> and qnabid like #{keyword} </when>
+		<!-- 제목 + 내용+ 작성자(별칭) -->
+		<otherwise> and qnabtitle like #{keyword} or qnabcontent like #{keyword} or qnabname like #{keyword} </otherwise>
+		</choose>
+) t2 
+ </select>
+</mapper>
